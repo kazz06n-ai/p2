@@ -158,22 +158,57 @@ export default function EnhancedPredictor() {
               </div>
 
               {pred && (
-                <>
-                  <div className={styles.progressBar}>
-                    <div className={styles.progressFill} style={{ 
-                      width: `${pred.safePercentage}%`, 
-                      background: isSafe ? 'var(--success)' : isWarning ? 'var(--warning)' : 'var(--danger)' 
-                    }}></div>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', marginTop: '1.5rem', borderTop: '1px solid rgba(255,255,255,0.1)', paddingTop: '1.5rem' }}>
+                  <div style={{ position: 'relative', width: '120px', height: '120px', marginBottom: '1rem' }}>
+                    <SvgRing percentage={pred.safePercentage} isSafe={isSafe} isWarning={isWarning} />
+                    <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white' }}>{pred.safePercentage.toFixed(0)}%</span>
+                      <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>SAFE</span>
+                    </div>
                   </div>
-                  <p style={{ margin: 0, fontSize: '0.8rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
+                  <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', textAlign: 'center', lineHeight: 1.5 }}>
                     {pred.recommendation}
                   </p>
-                </>
+                </div>
               )}
             </div>
           );
         })}
       </div>
     </section>
+  );
+}
+
+// Helper component for drawing the animated SVG ring
+function SvgRing({ percentage, isSafe, isWarning }: { percentage: number, isSafe: boolean, isWarning: boolean }) {
+  const radius = 50;
+  const circumference = 2 * Math.PI * radius;
+  // Ensure percentage is between 0 and 100
+  const clampedPct = Math.min(100, Math.max(0, percentage));
+  const strokeDashoffset = circumference - (clampedPct / 100) * circumference;
+  
+  const color = isSafe ? 'var(--success)' : isWarning ? 'var(--warning)' : 'var(--danger)';
+
+  return (
+    <svg width="120" height="120" viewBox="0 0 120 120" style={{ transform: 'rotate(-90deg)', filter: `drop-shadow(0 0 8px ${color})` }}>
+      {/* Background Track */}
+      <circle 
+        cx="60" cy="60" r={radius} 
+        fill="transparent" 
+        stroke="rgba(255,255,255,0.05)" 
+        strokeWidth="10" 
+      />
+      {/* Active Animated Ring */}
+      <circle 
+        cx="60" cy="60" r={radius} 
+        fill="transparent" 
+        stroke={color} 
+        strokeWidth="10" 
+        strokeDasharray={circumference} 
+        strokeDashoffset={strokeDashoffset}
+        strokeLinecap="round"
+        style={{ transition: 'stroke-dashoffset 1s ease-in-out, stroke 0.3s ease' }}
+      />
+    </svg>
   );
 }

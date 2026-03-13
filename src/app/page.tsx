@@ -90,19 +90,25 @@ export default function Home() {
 
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
         {/* Quick Stats Cards */}
-        <div className="glass-panel animate-fade-up">
+        <div className="glass-panel animate-fade-up" style={{ transition: 'transform 0.2s', cursor: 'default' }}
+             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'} 
+             onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Overall Attendance</h3>
           <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--success)' }}>86%</p>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>+2% from last week</p>
         </div>
 
-        <div className="glass-panel animate-fade-up delay-100">
+        <div className="glass-panel animate-fade-up delay-100" style={{ transition: 'transform 0.2s', cursor: 'default' }}
+             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'} 
+             onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
           <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Current CGPA</h3>
           <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--accent-primary)' }}>8.2</p>
           <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>On track for target 8.5</p>
         </div>
 
-        <div className="glass-panel animate-fade-up delay-200" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--accent-gradient)', border: 'none' }}>
+        <div className="glass-panel animate-fade-up delay-200" style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center', background: 'var(--accent-gradient)', border: 'none', transition: 'transform 0.2s, box-shadow 0.2s' }}
+             onMouseEnter={(e) => { e.currentTarget.style.transform = 'translateY(-4px)'; e.currentTarget.style.boxShadow = '0 10px 30px -10px var(--accent-primary)'; }} 
+             onMouseLeave={(e) => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none'; }}>
           <h3 style={{ fontSize: '1.2rem', marginBottom: '0.5rem', color: 'white' }}>Need to Study?</h3>
           <p style={{ fontSize: '0.9rem', textAlign: 'center', color: 'rgba(255,255,255,0.8)', marginBottom: '1rem' }}>
             Talk to the AI Assistant to generate quizzes from your recently uploaded notes in the Vault.
@@ -112,7 +118,106 @@ export default function Home() {
           </Link>
         </div>
       </div>
+
+      {/* --- QUICK LOG ATTENDANCE WIDGET --- */}
+      <h2 style={{ fontSize: '1.5rem', marginTop: '3rem', marginBottom: '1.5rem', color: 'white' }}>Today&apos;s Classes (Quick-Log)</h2>
+      
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
+        <QuickLogWidget />
+      </div>
     </div>
+  );
+}
+
+// Sub-component to handle client-side local storage safely
+import { useState, useEffect } from 'react';
+
+interface QuickLogSubject {
+  id: string;
+  name: string;
+  current: number;
+  required: number;
+  weight: number;
+}
+
+function QuickLogWidget() {
+  const [localSubjects, setLocalSubjects] = useState<QuickLogSubject[]>([]);
+  const [client, setClient] = useState(false);
+
+  useEffect(() => {
+    setClient(true);
+    const saved = localStorage.getItem('batchmind_subjects');
+    if (saved) {
+      setLocalSubjects(JSON.parse(saved));
+    }
+  }, []);
+
+  const handleLog = (id: string, type: 'attended' | 'skipped') => {
+    const updated = localSubjects.map(subj => {
+      if (subj.id === id) {
+        // Adjust the formula: if attended, increase both current & required hypothetically, else just required.
+        // For simplicity in the Quick UI, we just artificially bump the "current" score by 2% for testing the interactive UI.
+        const newCurrent = type === 'attended' 
+          ? Math.min(100, subj.current + 2) 
+          : Math.max(0, subj.current - 2);
+          
+        return { ...subj, current: newCurrent };
+      }
+      return subj;
+    });
+
+    setLocalSubjects(updated);
+    localStorage.setItem('batchmind_subjects', JSON.stringify(updated));
+  };
+
+  if (!client) return null;
+
+  if (localSubjects.length === 0) {
+    return (
+      <div className="glass-panel animate-fade-up" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem' }}>
+        <p style={{ color: 'var(--text-secondary)' }}>No custom subjects added yet.</p>
+        <Link href="/analytics" className="btn btn-primary" style={{ marginTop: '1rem', display: 'inline-flex' }}>
+          Add Subjects in Analytics ➔
+        </Link>
+      </div>
+    );
+  }
+
+  return (
+    <>
+      {localSubjects.map(subj => (
+        <div key={subj.id} className="glass-panel animate-fade-up" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'transform 0.2s', cursor: 'default' }} 
+             onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'} 
+             onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>
+          
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+            <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{subj.name}</h4>
+            <span style={{ fontSize: '1.2rem', fontWeight: 600, color: subj.current >= subj.required ? 'var(--success)' : 'var(--warning)' }}>
+              {subj.current}%
+            </span>
+          </div>
+
+          <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)' }}>Required: {subj.required}%</p>
+
+          <div style={{ display: 'flex', gap: '0.5rem', marginTop: 'auto', paddingTop: '0.5rem' }}>
+            <button 
+              onClick={() => handleLog(subj.id, 'attended')}
+              className="btn btn-glass" 
+              style={{ flex: 1, justifyContent: 'center', background: 'rgba(16, 185, 129, 0.1)', color: 'var(--success)', borderColor: 'rgba(16, 185, 129, 0.3)' }}
+            >
+              ✔ Attended
+            </button>
+            <button 
+              onClick={() => handleLog(subj.id, 'skipped')}
+              className="btn btn-glass" 
+              style={{ flex: 1, justifyContent: 'center', background: 'rgba(239, 68, 68, 0.1)', color: 'var(--danger)', borderColor: 'rgba(239, 68, 68, 0.3)' }}
+            >
+              ✖ Missed
+            </button>
+          </div>
+        </div>
+      ))}
+    </>
   );
 }
 
