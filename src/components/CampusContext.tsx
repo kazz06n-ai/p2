@@ -3,23 +3,24 @@
 import React, { createContext, useContext, useState, ReactNode } from 'react';
 
 type CampusContextType = {
-  activeCampus: string;
+  activeCampus: string; // Keeping variable name for backward-compatibility with other files, but it refers to Departments now
   setActiveCampus: (campus: string) => void;
-  availableCampuses: string[];
+  availableCampuses: string[]; 
 };
 
 const CampusContext = createContext<CampusContextType | undefined>(undefined);
 
 export function CampusProvider({ children }: { children: ReactNode }) {
-  // Default to Shoolini base on MVP
-  const [activeCampus, setActiveCampus] = useState("Shoolini University");
+  // Default to B.Tech CSE for Shoolini University
+  const [activeCampus, setActiveCampus] = useState("B.Tech CSE");
   
-  // Hardcoded for demo multi-tenancy
+  // Shoolini University Exclusive Departments
   const availableCampuses = [
-    "Shoolini University",
-    "MIT",
-    "Stanford",
-    "IIT Delhi"
+    "B.Tech CSE",
+    "B.Sc Biotechnology",
+    "BBA",
+    "MBA",
+    "B.A. Journalism & Mass Comm."
   ];
 
   return (

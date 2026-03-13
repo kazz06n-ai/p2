@@ -17,10 +17,9 @@ export default function LoginPage() {
     setTimeout(() => {
       // Simulate login logic
       const name = role === "ADMIN" ? "Admin User" : "Arjun (Student)";
-      const uni = "Shoolini University";
       
-      setActiveCampus(uni); // Sync campus context
-      login(name, role, uni);
+      // We pass the currently selected activeCampus (which acts as the Department based on our new Phase 9 logic)
+      login(name, role, "Shoolini University");
     }, 800);
   };
 
