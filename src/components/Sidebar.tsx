@@ -3,10 +3,12 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from './AuthContext';
+import { useTheme } from './ThemeContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
+  const { theme, toggleTheme } = useTheme();
 
   // Do not render the sidebar if we are not logged in (e.g. on the login page)
   if (!user) return null;
@@ -55,9 +57,9 @@ export default function Sidebar() {
                 padding: '0.8rem 1rem',
                 borderRadius: '12px',
                 textDecoration: 'none',
-                color: isActive ? 'white' : 'var(--text-secondary)',
-                background: isActive ? 'rgba(99, 102, 241, 0.15)' : 'transparent',
-                border: isActive ? '1px solid rgba(99, 102, 241, 0.3)' : '1px solid transparent',
+                color: isActive ? 'var(--text-primary)' : 'var(--text-secondary)',
+                background: isActive ? 'rgba(14, 165, 233, 0.15)' : 'transparent',
+                border: isActive ? '1px solid rgba(14, 165, 233, 0.3)' : '1px solid transparent',
                 transition: 'all 0.2s ease',
                 fontWeight: isActive ? 600 : 400
               }}
@@ -70,23 +72,33 @@ export default function Sidebar() {
       </nav>
 
       <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: user.role === 'ADMIN' ? 'var(--danger)' : 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.1)', border: '1px solid var(--glass-border)', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: user.role === 'ADMIN' ? 'var(--danger)' : 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold', color: 'white' }}>
             {user.name.charAt(0).toUpperCase()}
           </div>
           <div style={{ overflow: 'hidden' }}>
-            <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
+            <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden', color: 'var(--text-primary)' }}>{user.name}</p>
             <p style={{ margin: 0, fontSize: '0.75rem', color: user.role === 'ADMIN' ? 'var(--danger)' : 'var(--text-secondary)' }}>{user.role}</p>
           </div>
         </div>
 
-        <button 
-          onClick={logout}
-          className="btn btn-glass" 
-          style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}
-        >
-          Logout
-        </button>
+        <div style={{ display: 'flex', gap: '0.5rem' }}>
+          <button 
+            onClick={toggleTheme}
+            className="btn btn-glass"
+            style={{ flex: 1, padding: '0.6rem', fontSize: '1.2rem', justifyContent: 'center' }}
+            title={`Switch to ${theme === 'dark' ? 'Light' : 'Dark'} Mode`}
+          >
+            {theme === 'dark' ? '☀️' : '🌙'}
+          </button>
+          <button 
+            onClick={logout}
+            className="btn btn-glass" 
+            style={{ flex: 2, justifyContent: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}
+          >
+            Logout
+          </button>
+        </div>
       </div>
     </aside>
   );

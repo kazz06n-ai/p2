@@ -138,6 +138,7 @@ interface QuickLogSubject {
   current: number;
   required: number;
   weight: number;
+  weeklySchedule?: string[];
 }
 
 function QuickLogWidget() {
@@ -155,8 +156,6 @@ function QuickLogWidget() {
   const handleLog = (id: string, type: 'attended' | 'skipped') => {
     const updated = localSubjects.map(subj => {
       if (subj.id === id) {
-        // Adjust the formula: if attended, increase both current & required hypothetically, else just required.
-        // For simplicity in the Quick UI, we just artificially bump the "current" score by 2% for testing the interactive UI.
         const newCurrent = type === 'attended' 
           ? Math.min(100, subj.current + 2) 
           : Math.max(0, subj.current - 2);
@@ -183,9 +182,22 @@ function QuickLogWidget() {
     );
   }
 
+  // Filter strictly for today's classes based on the new Timetable system
+  const currentDay = new Date().toLocaleDateString('en-US', { weekday: 'short' });
+  const todaySubjects = localSubjects.filter(subj => subj.weeklySchedule?.includes(currentDay));
+
+  if (todaySubjects.length === 0) {
+    return (
+      <div className="glass-panel animate-fade-up" style={{ gridColumn: '1 / -1', textAlign: 'center', padding: '3rem', border: '1px solid var(--success)', background: 'rgba(16, 185, 129, 0.05)' }}>
+        <h3 style={{ fontSize: '1.2rem', color: 'var(--success)', marginBottom: '0.5rem' }}>No Classes Today!</h3>
+        <p style={{ color: 'var(--text-secondary)' }}>You have a clear schedule for {currentDay}. Enjoy your free time or hit the Vault to study ahead. 🎉</p>
+      </div>
+    );
+  }
+
   return (
     <>
-      {localSubjects.map(subj => (
+      {todaySubjects.map(subj => (
         <div key={subj.id} className="glass-panel animate-fade-up" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column', gap: '1rem', transition: 'transform 0.2s', cursor: 'default' }} 
              onMouseEnter={(e) => e.currentTarget.style.transform = 'translateY(-4px)'} 
              onMouseLeave={(e) => e.currentTarget.style.transform = 'translateY(0)'}>

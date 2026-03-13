@@ -9,6 +9,7 @@ interface SubjectData {
   current: number;
   required: number;
   weight: number;
+  weeklySchedule: string[];
 }
 
 export default function EnhancedPredictor() {
@@ -25,8 +26,8 @@ export default function EnhancedPredictor() {
     } else {
       // Default initial subjects
       setSubjects([
-        { id: '1', name: 'Physics 101', current: 82, required: 75, weight: 0.6 },
-        { id: '2', name: 'Data Structures', current: 71, required: 75, weight: 0.8 },
+        { id: '1', name: 'Physics 101', current: 82, required: 75, weight: 0.6, weeklySchedule: ['Mon', 'Wed', 'Fri'] },
+        { id: '2', name: 'Data Structures', current: 71, required: 75, weight: 0.8, weeklySchedule: ['Tue', 'Thu'] },
       ]);
     }
   }, []);
@@ -82,8 +83,22 @@ export default function EnhancedPredictor() {
       name: 'New Subject',
       current: 75,
       required: 75,
-      weight: 0.5
+      weight: 0.5,
+      weeklySchedule: []
     }]);
+  };
+
+  const toggleDay = (id: string, day: string) => {
+    setSubjects(prev => prev.map(s => {
+      if (s.id === id) {
+        const schedule = s.weeklySchedule || [];
+        const newSchedule = schedule.includes(day)
+          ? schedule.filter(d => d !== day)
+          : [...schedule, day];
+        return { ...s, weeklySchedule: newSchedule };
+      }
+      return s;
+    }));
   };
 
   const removeSubject = (id: string) => {
@@ -153,8 +168,34 @@ export default function EnhancedPredictor() {
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span>Exam Wt</span>
-                  <input type="number" step="0.1" value={subj.weight} onChange={e => updateSubject(subj.id, 'weight', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'white', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', fontFamily: 'var(--font-heading)' }} />
+                  <input type="number" step="0.1" value={subj.weight} onChange={e => updateSubject(subj.id, 'weight', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'var(--text-primary)', border: 'none', borderBottom: '1px solid var(--glass-border)', fontFamily: 'var(--font-heading)' }} />
                 </div>
+              </div>
+
+              {/* Weekly Schedule Toggle */}
+              <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(day => {
+                  const schedule = subj.weeklySchedule || [];
+                  const isSelected = schedule.includes(day);
+                  return (
+                    <button
+                      key={day}
+                      onClick={() => toggleDay(subj.id, day)}
+                      style={{
+                        padding: '0.2rem 0.5rem',
+                        fontSize: '0.75rem',
+                        borderRadius: '6px',
+                        border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--glass-border)'}`,
+                        background: isSelected ? 'var(--accent-primary)' : 'rgba(255,255,255,0.02)',
+                        color: isSelected ? 'white' : 'var(--text-secondary)',
+                        cursor: 'pointer',
+                        transition: 'all 0.2s ease',
+                      }}
+                    >
+                      {day}
+                    </button>
+                  );
+                })}
               </div>
 
               {pred && (

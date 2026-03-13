@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 import { CampusProvider } from "@/components/CampusContext";
 import { AuthProvider } from "@/components/AuthContext";
+import { ThemeProvider } from "@/components/ThemeContext";
 import Sidebar from "@/components/Sidebar";
 
 export default function RootLayout({
@@ -29,16 +30,18 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${inter.variable} ${outfit.variable}`}>
-        <AuthProvider>
-          <CampusProvider>
-            <div style={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
-              <Sidebar />
-              <div style={{ flex: 1, marginLeft: '260px', width: 'calc(100% - 260px)', display: 'flex', flexDirection: 'column' }}>
-                {children}
+        <ThemeProvider>
+          <AuthProvider>
+            <CampusProvider>
+              <div style={{ display: 'flex', minHeight: '100vh', width: '100%' }}>
+                <Sidebar />
+                <div style={{ flex: 1, marginLeft: '260px', width: 'calc(100% - 260px)', display: 'flex', flexDirection: 'column' }}>
+                  {children}
+                </div>
               </div>
-            </div>
-          </CampusProvider>
-        </AuthProvider>
+            </CampusProvider>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );
