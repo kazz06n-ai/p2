@@ -29,7 +29,7 @@ export default function Home() {
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
           <div className="glass-panel animate-fade-up" style={{ borderTop: '4px solid var(--danger)' }}>
             <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Total Active Users</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'white' }}>1,284</p>
+            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>1,284</p>
             <p style={{ fontSize: '0.85rem', color: 'var(--success)', marginTop: '0.5rem' }}>+12% this month</p>
           </div>
 
@@ -120,7 +120,7 @@ export default function Home() {
       </div>
 
       {/* --- QUICK LOG ATTENDANCE WIDGET --- */}
-      <h2 style={{ fontSize: '1.5rem', marginTop: '3rem', marginBottom: '1.5rem', color: 'white' }}>Today&apos;s Classes (Quick-Log)</h2>
+      <h2 style={{ fontSize: '1.5rem', marginTop: '3rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>Today&apos;s Classes (Quick-Log)</h2>
       
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(280px, 1fr))', gap: '1rem' }}>
         <QuickLogWidget />

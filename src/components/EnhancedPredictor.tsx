@@ -148,7 +148,7 @@ export default function EnhancedPredictor() {
                   type="text" 
                   value={subj.name} 
                   onChange={e => updateSubject(subj.id, 'name', e.target.value)}
-                  style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', color: 'white', fontSize: '1.1rem', fontWeight: 600, outline: 'none', width: '65%' }}
+                  style={{ background: 'transparent', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', color: 'var(--text-primary)', fontSize: '1.1rem', fontWeight: 600, outline: 'none', width: '65%' }}
                 />
                 {pred && (
                   <span className={`badge ${isSafe ? 'badge-success' : isWarning ? 'badge-warning' : 'badge-danger'}`}>
@@ -160,11 +160,11 @@ export default function EnhancedPredictor() {
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '1rem', fontSize: '0.85rem', color: 'var(--text-secondary)' }}>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span>Current %</span>
-                  <input type="number" value={subj.current} onChange={e => updateSubject(subj.id, 'current', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'white', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', fontFamily: 'var(--font-heading)' }} />
+                  <input type="number" value={subj.current} onChange={e => updateSubject(subj.id, 'current', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'var(--text-primary)', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', fontFamily: 'var(--font-heading)' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span>Req. %</span>
-                  <input type="number" value={subj.required} onChange={e => updateSubject(subj.id, 'required', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'white', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', fontFamily: 'var(--font-heading)' }} />
+                  <input type="number" value={subj.required} onChange={e => updateSubject(subj.id, 'required', Number(e.target.value))} style={{ width: '50px', background: 'transparent', color: 'var(--text-primary)', border: 'none', borderBottom: '1px solid rgba(255,255,255,0.2)', fontFamily: 'var(--font-heading)' }} />
                 </div>
                 <div style={{ display: 'flex', flexDirection: 'column' }}>
                   <span>Exam Wt</span>
@@ -174,7 +174,7 @@ export default function EnhancedPredictor() {
 
               {/* Weekly Schedule Toggle */}
               <div style={{ display: 'flex', gap: '0.4rem', marginBottom: '1rem', flexWrap: 'wrap' }}>
-                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri'].map(day => {
+                {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map(day => {
                   const schedule = subj.weeklySchedule || [];
                   const isSelected = schedule.includes(day);
                   return (
@@ -186,8 +186,8 @@ export default function EnhancedPredictor() {
                         fontSize: '0.75rem',
                         borderRadius: '6px',
                         border: `1px solid ${isSelected ? 'var(--accent-primary)' : 'var(--glass-border)'}`,
-                        background: isSelected ? 'var(--accent-primary)' : 'rgba(255,255,255,0.02)',
-                        color: isSelected ? 'white' : 'var(--text-secondary)',
+                        background: isSelected ? 'var(--accent-primary)' : 'rgba(0,0,0,0.05)',
+                        color: isSelected ? '#ffffff' : 'var(--text-secondary)',
                         cursor: 'pointer',
                         transition: 'all 0.2s ease',
                       }}
@@ -203,7 +203,7 @@ export default function EnhancedPredictor() {
                   <div style={{ position: 'relative', width: '120px', height: '120px', marginBottom: '1rem' }}>
                     <SvgRing percentage={pred.safePercentage} isSafe={isSafe} isWarning={isWarning} />
                     <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', flexDirection: 'column' }}>
-                      <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'white' }}>{pred.safePercentage.toFixed(0)}%</span>
+                      <span style={{ fontSize: '1.5rem', fontWeight: 700, color: 'var(--text-primary)' }}>{pred.safePercentage.toFixed(0)}%</span>
                       <span style={{ fontSize: '0.7rem', color: 'var(--text-secondary)' }}>SAFE</span>
                     </div>
                   </div>
