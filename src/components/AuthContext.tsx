@@ -3,22 +3,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 
-interface UserInfo {
-  name: string;
-  role: "USER" | "ADMIN";
-  university: string;
-}
+import { GlobalUser } from "./UserContext";
 
 interface AuthContextType {
-  user: UserInfo | null;
-  login: (name: string, role: "USER" | "ADMIN", university: string) => void;
+  user: GlobalUser | null;
+  login: (userData: GlobalUser) => void;
   logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
-  const [user, setUser] = useState<UserInfo | null>(null);
+  const [user, setUser] = useState<GlobalUser | null>(null);
   const router = useRouter();
   const pathname = usePathname();
 
@@ -32,10 +28,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [pathname, router]);
 
-  const login = (name: string, role: "USER" | "ADMIN", university: string) => {
-    const newUser = { name, role, university };
-    setUser(newUser);
-    localStorage.setItem("batchmind_auth", JSON.stringify(newUser));
+  const login = (userData: GlobalUser) => {
+    setUser(userData);
+    localStorage.setItem("batchmind_auth", JSON.stringify(userData));
     router.push("/"); // Redirect to dashboard Overview on login
   };
 

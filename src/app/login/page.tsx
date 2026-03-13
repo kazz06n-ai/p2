@@ -3,10 +3,13 @@
 import { useState } from "react";
 import { useAuth } from "@/components/AuthContext";
 import { useCampus } from "@/components/CampusContext";
+import { useGlobalUsers } from "@/components/UserContext";
 
 export default function LoginPage() {
   const { login } = useAuth();
-  const { setActiveCampus } = useCampus();
+  const { setActiveCampus, activeCampus } = useCampus();
+  const { addUser, getUserByEmail } = useGlobalUsers();
+  
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -18,11 +21,14 @@ export default function LoginPage() {
   const handleDemoLogin = (role: "USER" | "ADMIN") => {
     setIsLoading(true);
     setTimeout(() => {
-      // Simulate login logic
-      const name = isSignUp && fullName ? fullName : role === "ADMIN" ? "Admin User" : "Arjun (Student)";
-      
-      // We pass the currently selected activeCampus (which acts as the Department based on our new Phase 9 logic)
-      login(name, role, "Shoolini University");
+      const email = role === "ADMIN" ? "admin" : "arjun@shoolini.edu";
+      const user = getUserByEmail(email);
+      if (user) {
+        login(user); // GlobalUser
+      } else {
+        setError(`Demo user for ${role} not found in database.`);
+        setIsLoading(false);
+      }
     }, 800);
   };
 
@@ -33,15 +39,42 @@ export default function LoginPage() {
         setError("Please fill out all fields.");
         return;
       }
-      handleDemoLogin("USER");
-    } else {
-      if (username === "admin" && password === "admin") {
-        handleDemoLogin("ADMIN");
-      } else if (username && password) {
-        handleDemoLogin("USER");
-      } else {
-        setError("Please enter demo credentials.");
+      
+      const existingUser = getUserByEmail(username);
+      if (existingUser) {
+        setError("An account with this email already exists.");
+        return;
       }
+
+      setIsLoading(true);
+      setTimeout(() => {
+        const newUser = addUser({
+          name: fullName,
+          email: username,
+          password: password,
+          role: "USER",
+          department: activeCampus // Assuming the user selects their Dept before or default is fine
+        });
+        login(newUser);
+      }, 800);
+      
+    } else {
+      if (!username || !password) {
+        setError("Please enter credentials.");
+        return;
+      }
+      
+      setIsLoading(true);
+      setTimeout(() => {
+        const user = getUserByEmail(username);
+        // Direct password check against mock DB (Insecure, but fine for simulated offline demo)
+        if (user && user.password === password) {
+          login(user);
+        } else {
+          setError("Invalid username or password.");
+          setIsLoading(false);
+        }
+      }, 800);
     }
   };
 

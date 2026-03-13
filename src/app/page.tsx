@@ -3,6 +3,7 @@
 import styles from './dashboard.module.css';
 import { useCampus } from '@/components/CampusContext';
 import { useAuth } from '@/components/AuthContext';
+import { useGlobalUsers, GlobalUser } from '@/components/UserContext';
 import Link from 'next/link';
 
 export default function Home() {
@@ -214,29 +215,15 @@ function QuickLogWidget() {
   );
 }
 
-// Sub-component for Admin User Management
-interface AdminUser {
-  id: string;
-  name: string;
-  email: string;
-  role: 'USER' | 'ADMIN';
-  department: string;
-}
-
 function AdminUserChecker() {
   const { availableCampuses } = useCampus();
-  const [users, setUsers] = useState<AdminUser[]>([
-    { id: '1', name: 'Arjun Kumar', email: 'arjun@shoolini.edu', role: 'USER', department: 'B.Tech CSE' },
-    { id: '2', name: 'Simran Kaur', email: 'simran@shoolini.edu', role: 'USER', department: 'BBA' },
-    { id: '3', name: 'Vikram Singh', email: 'vikram@shoolini.edu', role: 'USER', department: 'B.Pharm' },
-    { id: '4', name: 'Dr. Sharma', email: 'sharma@shoolini.edu', role: 'ADMIN', department: 'School of Law' },
-  ]);
+  const { users, updateUser, deleteUser } = useGlobalUsers();
 
-  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+  const [editingUser, setEditingUser] = useState<GlobalUser | null>(null);
 
   const handleDelete = (id: string) => {
     if (confirm("Are you sure you want to permanently delete this user?")) {
-      setUsers(users.filter(u => u.id !== id));
+      deleteUser(id);
     }
   };
 
@@ -244,7 +231,7 @@ function AdminUserChecker() {
     e.preventDefault();
     if (!editingUser) return;
     
-    setUsers(users.map(u => u.id === editingUser.id ? editingUser : u));
+    updateUser(editingUser.id, editingUser);
     setEditingUser(null);
   };
 
