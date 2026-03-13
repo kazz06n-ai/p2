@@ -8,12 +8,19 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id         String   @id @default(uuid())
   name       String
   university String
   year       String
   department String
+  password   String   @default("password123")
+  role       Role     @default(USER)
   resources  Resource[]
   attendance AttendanceLog[]
   createdAt  DateTime @default(now())

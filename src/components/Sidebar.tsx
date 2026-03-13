@@ -2,9 +2,14 @@
 
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useAuth } from './AuthContext';
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { user, logout } = useAuth();
+
+  // Do not render the sidebar if we are not logged in (e.g. on the login page)
+  if (!user) return null;
 
   const links = [
     { name: 'Dashboard', href: '/', icon: '⌂' },
@@ -26,7 +31,8 @@ export default function Sidebar() {
       padding: '2rem 1rem',
       position: 'fixed',
       left: 0,
-      top: 0
+      top: 0,
+      zIndex: 50
     }}>
       <div style={{ padding: '0 1rem', marginBottom: '3rem' }}>
         <h2 style={{ margin: 0, fontSize: '1.5rem', background: 'var(--accent-gradient)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
@@ -63,14 +69,24 @@ export default function Sidebar() {
         })}
       </nav>
 
-      <div style={{ marginTop: 'auto', padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
-        <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
-          A
+      <div style={{ marginTop: 'auto', display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+        <div style={{ padding: '1rem', background: 'rgba(0,0,0,0.2)', borderRadius: '12px', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+          <div style={{ width: '36px', height: '36px', borderRadius: '50%', background: user.role === 'ADMIN' ? 'var(--danger)' : 'var(--accent-primary)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>
+            {user.name.charAt(0).toUpperCase()}
+          </div>
+          <div style={{ overflow: 'hidden' }}>
+            <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600, whiteSpace: 'nowrap', textOverflow: 'ellipsis', overflow: 'hidden' }}>{user.name}</p>
+            <p style={{ margin: 0, fontSize: '0.75rem', color: user.role === 'ADMIN' ? 'var(--danger)' : 'var(--text-secondary)' }}>{user.role}</p>
+          </div>
         </div>
-        <div>
-          <p style={{ margin: 0, fontSize: '0.9rem', fontWeight: 600 }}>Arjun</p>
-          <p style={{ margin: 0, fontSize: '0.75rem', color: 'var(--text-secondary)' }}>Student</p>
-        </div>
+
+        <button 
+          onClick={logout}
+          className="btn btn-glass" 
+          style={{ width: '100%', justifyContent: 'center', fontSize: '0.85rem', color: 'var(--text-secondary)' }}
+        >
+          Logout
+        </button>
       </div>
     </aside>
   );
