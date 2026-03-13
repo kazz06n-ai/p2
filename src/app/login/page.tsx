@@ -18,20 +18,6 @@ export default function LoginPage() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [fullName, setFullName] = useState("");
 
-  const handleDemoLogin = (role: "USER" | "ADMIN") => {
-    setIsLoading(true);
-    setTimeout(() => {
-      const email = role === "ADMIN" ? "admin" : "arjun@shoolini.edu";
-      const user = getUserByEmail(email);
-      if (user) {
-        login(user); // GlobalUser
-      } else {
-        setError(`Demo user for ${role} not found in database.`);
-        setIsLoading(false);
-      }
-    }, 800);
-  };
-
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (isSignUp) {
@@ -221,30 +207,6 @@ export default function LoginPage() {
             {isSignUp ? "Already have an account? Sign In" : "Don't have an account? Sign Up"}
           </button>
         </div>
-
-        {!isSignUp && (
-          <div style={{ marginTop: '2.5rem', borderTop: '1px solid var(--glass-border)', paddingTop: '2rem' }}>
-            <p style={{ textAlign: 'center', color: 'var(--text-secondary)', fontSize: '0.85rem', marginBottom: '1rem' }}>Or use a quick demo account:</p>
-            <div style={{ display: 'flex', gap: '1rem' }}>
-              <button 
-                onClick={() => handleDemoLogin("USER")}
-                disabled={isLoading}
-                className="btn btn-glass" 
-                style={{ flex: 1, justifyContent: 'center', fontSize: '0.85rem' }}
-              >
-                Demo User
-              </button>
-              <button 
-                onClick={() => handleDemoLogin("ADMIN")}
-                disabled={isLoading}
-                className="btn btn-glass" 
-                style={{ flex: 1, justifyContent: 'center', fontSize: '0.85rem', borderColor: 'rgba(239, 68, 68, 0.3)' }}
-              >
-                Demo Admin
-              </button>
-            </div>
-          </div>
-        )}
       </div>
     </div>
   );
