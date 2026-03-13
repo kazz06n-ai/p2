@@ -26,27 +26,8 @@ export default function Home() {
           </div>
         </header>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(300px, 1fr))', gap: '1.5rem' }}>
-          <div className="glass-panel animate-fade-up" style={{ borderTop: '4px solid var(--danger)' }}>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Total Active Users</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--text-primary)' }}>1,284</p>
-            <p style={{ fontSize: '0.85rem', color: 'var(--success)', marginTop: '0.5rem' }}>+12% this month</p>
-          </div>
+        <AdminUserChecker />
 
-          <div className="glass-panel animate-fade-up delay-100" style={{ borderTop: '4px solid var(--accent-primary)' }}>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>System Health</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--success)' }}>99.9%</p>
-            <p style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>All services operational</p>
-          </div>
-
-          <div className="glass-panel animate-fade-up delay-200" style={{ borderTop: '4px solid var(--warning)' }}>
-            <h3 style={{ fontSize: '1.1rem', color: 'var(--text-secondary)', marginBottom: '1rem' }}>Pending Reports</h3>
-            <p style={{ fontSize: '2.5rem', fontWeight: 700, margin: 0, color: 'var(--warning)' }}>4</p>
-            <button className="btn btn-glass" style={{ width: '100%', marginTop: '1rem', justifyContent: 'center' }}>
-              Review Flags
-            </button>
-          </div>
-        </div>
       </div>
     );
   }
@@ -229,6 +210,160 @@ function QuickLogWidget() {
           </div>
         </div>
       ))}
+    </>
+  );
+}
+
+// Sub-component for Admin User Management
+interface AdminUser {
+  id: string;
+  name: string;
+  email: string;
+  role: 'USER' | 'ADMIN';
+  department: string;
+}
+
+function AdminUserChecker() {
+  const { availableCampuses } = useCampus();
+  const [users, setUsers] = useState<AdminUser[]>([
+    { id: '1', name: 'Arjun Kumar', email: 'arjun@shoolini.edu', role: 'USER', department: 'B.Tech CSE' },
+    { id: '2', name: 'Simran Kaur', email: 'simran@shoolini.edu', role: 'USER', department: 'BBA' },
+    { id: '3', name: 'Vikram Singh', email: 'vikram@shoolini.edu', role: 'USER', department: 'B.Pharm' },
+    { id: '4', name: 'Dr. Sharma', email: 'sharma@shoolini.edu', role: 'ADMIN', department: 'School of Law' },
+  ]);
+
+  const [editingUser, setEditingUser] = useState<AdminUser | null>(null);
+
+  const handleDelete = (id: string) => {
+    if (confirm("Are you sure you want to permanently delete this user?")) {
+      setUsers(users.filter(u => u.id !== id));
+    }
+  };
+
+  const handleSaveEdit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingUser) return;
+    
+    setUsers(users.map(u => u.id === editingUser.id ? editingUser : u));
+    setEditingUser(null);
+  };
+
+  return (
+    <>
+      <div className="glass-panel animate-fade-up">
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '2rem' }}>
+          <h2 style={{ fontSize: '1.5rem', margin: 0, color: 'var(--text-primary)' }}>User Directory</h2>
+          <span style={{ color: 'var(--text-secondary)' }}>Showing {users.length} users</span>
+        </div>
+
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', textAlign: 'left' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid var(--glass-border)' }}>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Name</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Email</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Department</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600 }}>Role</th>
+                <th style={{ padding: '1rem', color: 'var(--text-secondary)', fontWeight: 600, textAlign: 'right' }}>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {users.map(u => (
+                <tr key={u.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)' }}>
+                  <td style={{ padding: '1rem', color: 'var(--text-primary)' }}>{u.name}</td>
+                  <td style={{ padding: '1rem', color: 'var(--text-secondary)' }}>{u.email}</td>
+                  <td style={{ padding: '1rem', color: 'var(--accent-secondary)' }}>{u.department}</td>
+                  <td style={{ padding: '1rem' }}>
+                    <span className="badge" style={{ 
+                      background: u.role === 'ADMIN' ? 'rgba(239, 68, 68, 0.1)' : 'rgba(16, 185, 129, 0.1)', 
+                      color: u.role === 'ADMIN' ? 'var(--danger)' : 'var(--success)' 
+                    }}>
+                      {u.role}
+                    </span>
+                  </td>
+                  <td style={{ padding: '1rem', textAlign: 'right' }}>
+                    <button onClick={() => setEditingUser(u)} style={{ background: 'transparent', border: 'none', color: 'var(--accent-primary)', cursor: 'pointer', marginRight: '1rem' }}>Edit</button>
+                    <button onClick={() => handleDelete(u.id)} style={{ background: 'transparent', border: 'none', color: 'var(--danger)', cursor: 'pointer' }}>Delete</button>
+                  </td>
+                </tr>
+              ))}
+              {users.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ padding: '2rem', textAlign: 'center', color: 'var(--text-secondary)' }}>No users found in system.</td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {/* Edit Modal */}
+      {editingUser && (
+        <div style={{
+          position: 'fixed',
+          top: 0, left: 0, width: '100%', height: '100%',
+          background: 'rgba(0,0,0,0.8)',
+          backdropFilter: 'blur(10px)',
+          display: 'flex', alignItems: 'center', justifyContent: 'center',
+          zIndex: 1000, padding: '1rem'
+        }}>
+          <div className="glass-panel" style={{ width: '100%', maxWidth: '500px', padding: '2.5rem', position: 'relative' }}>
+            <h2 style={{ marginTop: 0, marginBottom: '2rem', color: 'var(--text-primary)' }}>Edit User</h2>
+            
+            <form onSubmit={handleSaveEdit} style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Name</label>
+                <input 
+                  type="text" 
+                  value={editingUser.name}
+                  onChange={e => setEditingUser({...editingUser, name: e.target.value})}
+                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Email</label>
+                <input 
+                  type="text" 
+                  value={editingUser.email}
+                  disabled
+                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.4)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-secondary)', cursor: 'not-allowed' }}
+                />
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Department</label>
+                <select 
+                  value={editingUser.department}
+                  onChange={e => setEditingUser({...editingUser, department: e.target.value})}
+                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+                >
+                  {availableCampuses.map(c => (
+                    <option key={c} value={c} style={{ background: '#1a1a2e', color: 'white' }}>{c}</option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label style={{ display: 'block', marginBottom: '0.5rem', color: 'var(--text-secondary)' }}>Role</label>
+                <select 
+                  value={editingUser.role}
+                  onChange={e => setEditingUser({...editingUser, role: e.target.value as 'USER' | 'ADMIN'})}
+                  style={{ width: '100%', padding: '0.8rem', background: 'rgba(0,0,0,0.2)', border: '1px solid var(--glass-border)', borderRadius: '8px', color: 'var(--text-primary)' }}
+                >
+                  <option value="USER" style={{ background: '#1a1a2e', color: 'white' }}>User</option>
+                  <option value="ADMIN" style={{ background: '#1a1a2e', color: 'white' }}>Admin</option>
+                </select>
+              </div>
+
+              <div style={{ display: 'flex', gap: '1rem', marginTop: '1rem' }}>
+                <button type="submit" className="btn btn-primary" style={{ flex: 1, justifyContent: 'center' }}>Save Changes</button>
+                <button type="button" onClick={() => setEditingUser(null)} className="btn btn-glass" style={{ flex: 1, justifyContent: 'center' }}>Cancel</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }
