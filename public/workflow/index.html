@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BatchMind — Workflow</title>
+  <meta name="description" content="Interactive workflow visualization for the BatchMind university platform." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- ─── SVG layer for connector lines ─── -->
+  <svg id="connectors" aria-hidden="true"></svg>
+
+  <!-- ─── Hero ─── -->
+  <header class="hero">
+    <div class="hero-badge">University Platform</div>
+    <h1 class="hero-title">Batch<span>Mind</span></h1>
+    <p class="hero-sub">How the application works — interactive workflow</p>
+    <div class="hero-cta">
+      <button id="playBtn" class="btn-glow" title="Animate the entire flow step-by-step">▶ Play Flow</button>
+    </div>
+  </header>
+
+  <!-- ─── Workflow Grid ─── -->
+  <main class="flow-container">
+
+    <!-- Row 1 — Entry -->
+    <section class="flow-row" data-row="1">
+      <article class="card" id="card-login" data-step="1">
+        <div class="card-icon">🔐</div>
+        <h2>Login / Register</h2>
+        <p class="card-desc">Students & admins sign in. Auth state managed via React Context.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>Page:</b> /login</li>
+            <li><b>Components:</b> AuthContext, UserContext</li>
+            <li><b>Roles:</b> USER · ADMIN</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+    </section>
+
+    <!-- Arrow down -->
+    <div class="arrow-down" data-connector="login-dashboard">
+      <svg width="24" height="48" viewBox="0 0 24 48"><path d="M12 0 v40 M4 32 l8 10 l8-10" stroke="url(#grad1)" stroke-width="2" fill="none"/></svg>
+    </div>
+
+    <!-- Row 2 — Dashboard -->
+    <section class="flow-row" data-row="2">
+      <article class="card card-primary" id="card-dashboard" data-step="2">
+        <div class="card-icon">🏠</div>
+        <h2>Dashboard</h2>
+        <p class="card-desc">Central hub — widgets, feed, quick-access cards, and sidebar navigation.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>Page:</b> / (page.tsx — 17 kB)</li>
+            <li><b>Components:</b> Sidebar, FeedList, PredictorWidget, StudyBotWidget</li>
+            <li><b>Theme:</b> ThemeContext (dark/light)</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+    </section>
+
+    <!-- Arrow fan-out -->
+    <div class="arrow-down fan" data-connector="dashboard-features">
+      <svg width="24" height="48" viewBox="0 0 24 48"><path d="M12 0 v40 M4 32 l8 10 l8-10" stroke="url(#grad1)" stroke-width="2" fill="none"/></svg>
+    </div>
+
+    <!-- Row 3 — Feature cards -->
+    <section class="flow-row flow-features" data-row="3">
+
+      <article class="card" id="card-vault" data-step="3">
+        <div class="card-icon">📦</div>
+        <h2>Resource Vault</h2>
+        <p class="card-desc">Upload PDFs &amp; photos, OCR extraction via Tesseract.js, LLM summaries.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>Page:</b> /vault</li>
+            <li><b>API:</b> /api/extract, /api/notes, /api/summarize</li>
+            <li><b>Components:</b> UploadCard, MyNotes</li>
+            <li><b>OCR:</b> Tesseract.js 7</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+
+      <article class="card" id="card-attendance" data-step="4">
+        <div class="card-icon">📊</div>
+        <h2>Attendance</h2>
+        <p class="card-desc">Track attendance per subject, predict skip-safe probability.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>API:</b> /api/attendance</li>
+            <li><b>Components:</b> EnhancedPredictor, PredictorWidget</li>
+            <li><b>Model:</b> AttendanceLog</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+
+      <article class="card" id="card-cgpa" data-step="5">
+        <div class="card-icon">🎓</div>
+        <h2>CGPA Calculator</h2>
+        <p class="card-desc">Enter grades &amp; credits, compute cumulative GPA instantly.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>API:</b> /api/cgpa</li>
+            <li><b>Components:</b> CGPANavigator</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+
+      <article class="card" id="card-assistant" data-step="6">
+        <div class="card-icon">🤖</div>
+        <h2>AI Study Bot</h2>
+        <p class="card-desc">Chat with an AI assistant — ask questions, get study tips &amp; summaries.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>Page:</b> /assistant</li>
+            <li><b>API:</b> /api/chat, /api/summarize</li>
+            <li><b>Components:</b> StudyBotWidget</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+
+      <article class="card" id="card-analytics" data-step="7">
+        <div class="card-icon">📈</div>
+        <h2>Analytics</h2>
+        <p class="card-desc">Visual dashboards of your academic performance &amp; trends.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>Page:</b> /analytics</li>
+            <li><b>Data:</b> Aggregated from Attendance &amp; CGPA</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+
+    </section>
+
+    <!-- Arrow down -->
+    <div class="arrow-down" data-connector="features-backend">
+      <svg width="24" height="48" viewBox="0 0 24 48"><path d="M12 0 v40 M4 32 l8 10 l8-10" stroke="url(#grad1)" stroke-width="2" fill="none"/></svg>
+    </div>
+
+    <!-- Row 4 — Backend -->
+    <section class="flow-row" data-row="4">
+      <article class="card card-backend" id="card-api" data-step="8">
+        <div class="card-icon">⚙️</div>
+        <h2>Next.js API Routes</h2>
+        <p class="card-desc">Server-side route handlers under <code>/api/*</code> — REST endpoints for every feature.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li>/api/attendance</li>
+            <li>/api/cgpa</li>
+            <li>/api/chat</li>
+            <li>/api/extract</li>
+            <li>/api/notes</li>
+            <li>/api/summarize</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+    </section>
+
+    <!-- Arrow down -->
+    <div class="arrow-down" data-connector="api-db">
+      <svg width="24" height="48" viewBox="0 0 24 48"><path d="M12 0 v40 M4 32 l8 10 l8-10" stroke="url(#grad1)" stroke-width="2" fill="none"/></svg>
+    </div>
+
+    <!-- Row 5 — Database -->
+    <section class="flow-row" data-row="5">
+      <article class="card card-db" id="card-db" data-step="9">
+        <div class="card-icon">🗄️</div>
+        <h2>PostgreSQL + Prisma</h2>
+        <p class="card-desc">Three core models — User, Resource, AttendanceLog. Managed via Prisma ORM.</p>
+        <div class="card-detail hidden">
+          <ul>
+            <li><b>User:</b> id, name, university, year, department, role</li>
+            <li><b>Resource:</b> uploaderId → User, fileType, summaryText</li>
+            <li><b>AttendanceLog:</b> userId → User, subject, status, skipSafeProbability</li>
+          </ul>
+        </div>
+        <button class="card-toggle" aria-label="Toggle details">＋</button>
+      </article>
+    </section>
+
+  </main>
+
+  <!-- ─── Tech Stack Footer ─── -->
+  <footer class="tech-footer">
+    <h3>Tech Stack</h3>
+    <div class="badges">
+      <span class="badge">Next.js 16</span>
+      <span class="badge">TypeScript</span>
+      <span class="badge">Prisma 5</span>
+      <span class="badge">PostgreSQL</span>
+      <span class="badge">Tesseract.js</span>
+      <span class="badge">Axios</span>
+      <span class="badge">CSS Modules</span>
+      <span class="badge">React 19</span>
+    </div>
+  </footer>
+
+  <!-- gradient defs shared by inline SVGs -->
+  <svg width="0" height="0" style="position:absolute">
+    <defs>
+      <linearGradient id="grad1" x1="0" y1="0" x2="0" y2="1">
+        <stop offset="0%" stop-color="#6366f1"/>
+        <stop offset="100%" stop-color="#a855f7"/>
+      </linearGradient>
+    </defs>
+  </svg>
+
+  <script src="script.js"></script>
+</body>
+</html>
